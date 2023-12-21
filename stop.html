@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333; /* Changed to black */
+            font-family: Arial, sans-serif;
+            margin: 0; /* Remove default margin */
+        }
+
+        .stopwatch {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 20px; /* Increased gap */
+            padding: 40px; /* Increased padding */
+            background-color: #000; /* Changed to black */
+            border-radius: 20px; /* Increased border radius */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.8); /* Increased box shadow */
+        }
+
+        .display {
+            grid-column: span 4;
+            font-size: 80px; /* Increased font size */
+            font-weight: bold;
+            color: #fff; /* Changed to white */
+            text-align: center;
+        }
+
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 20px 40px; /* Increased padding */
+            font-size: 24px; /* Increased font size */
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adjusted box shadow */
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button:active {
+            background-color: #004085;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Adjusted box shadow */
+        }
+
+        .lap {
+            font-size: 24px; /* Increased font size */
+            color: #fff; /* Changed to white */
+            padding: 10px 0; /* Increased padding */
+            text-align: center; /* Centered text */
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="display">0:00</div>
+        <button class="button start" onclick="start()">Start</button>
+        <button class="button stop" onclick="stop()">Stop</button>
+        <button class="button reset" onclick="reset()">Reset</button>
+        <button class="button lap" onclick="lap()">Lap</button>
+        <div class="lap-container">
+            <!-- Lap sections will be added dynamically here -->
+        </div>
+    </div>
+
+    <script>
+        let timer = null;
+        let startTime;
+        let time = 0;
+        let lapNumber = 1;
+
+        function start() {
+            startTime = new Date();
+            timer = setInterval(function () {
+                let now = new Date();
+                time += now - startTime;
+                startTime = now;
+                displayTime();
+            }, 10);
+            document.querySelector('.start').disabled = true;
+            document.querySelector('.stop').disabled = false;
+            document.querySelector('.lap').disabled = false;
+        }
+
+        function stop() {
+            clearInterval(timer);
+            document.querySelector('.start').disabled = false;
+            document.querySelector('.stop').disabled = true;
+            document.querySelector('.lap').disabled = true;
+        }
+
+        function reset() {
+            clearInterval(timer);
+            time = 0;
+            displayTime();
+            document.querySelector('.start').disabled = false;
+            document.querySelector('.stop').disabled = true;
+            document.querySelector('.lap').disabled = true;
+            lapNumber = 1;
+            document.querySelector('.lap-container').innerHTML = '';
+        }
+
+        function lap() {
+            const lapContainer = document.querySelector('.lap-container');
+            const lapItem = document.createElement('div');
+            lapItem.className = 'lap';
+            lapItem.textContent = `Lap ${lapNumber}: ${getTimeString()}`;
+            lapContainer.appendChild(lapItem);
+            lapNumber++;
+        }
+
+        function displayTime() {
+            document.querySelector('.display').textContent = getTimeString();
+        }
+
+        function getTimeString() {
+            let milliseconds = time % 1000;
+            let seconds = Math.floor((time / 1000) % 60);
+            let minutes = Math.floor((time / (1000 * 60)) % 60);
+            let hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+
+            if (hours < 10) hours = '0' + hours;
+            if (minutes < 10) minutes = '0' + minutes;
+            if (seconds < 10) seconds = '0' + seconds;
+            if (milliseconds < 10) milliseconds = '00' + milliseconds;
+            else if (milliseconds < 100) milliseconds = '0' + milliseconds;
+
+            return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }
+    </script>
+</body>
+</html>
